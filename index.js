@@ -1,8 +1,10 @@
+#!/usr/bin/env node
 import os from "os";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 import { getVMStat, renderGraph } from "./ram.js";
 import { getDiskInfo, renderDiskGraph } from "./disk.js";
+import { getData, renderNetworkGraph } from "./network.js";
 
 const user = os.userInfo();
 const host = os.hostname();
@@ -144,9 +146,13 @@ const renderSideBySide = (leftLines, rightLines, gap = 4) => {
   process.stdout.write(out);
 };
 
+const downHistory = [];
+const upHistory = [];
+
 setInterval(async () => {
   const totalRamConsumed = await getVMStat();
   const diskInfo = await getDiskInfo();
+  const { parsedInputBytes, parsedOutputBytes } = await getData();
 
   process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
   // process.stdout.write(
@@ -158,4 +164,13 @@ setInterval(async () => {
   const ramLines = renderGraph(totalRamConsumed);
   const diskLines = renderDiskGraph(diskInfo);
   renderSideBySide(ramLines, diskLines);
+  process.stdout.write("\n");
+  const downLines = renderNetworkGraph(
+    parsedInputBytes,
+    "DOWNLOAD ↓",
+    downHistory,
+  );
+
+  const upLines = renderNetworkGraph(parsedOutputBytes, "UPLOAD ↑", upHistory);
+  renderSideBySide(downLines, upLines);
 }, 1000);
