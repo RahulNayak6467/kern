@@ -19,8 +19,6 @@ export const getDiskInfo = async () => {
     if (stderr) {
       console.error(`Error in getDiskInfo: ${stderr}`);
     }
-    console.log(stdout);
-    // console.log(stdout.split("\n")[3].replace(/\s+/g, " ").trim().split(" "));
     const diskInfo = stdout
       .split("\n")[3]
       .replace(/\s+/g, " ")
@@ -39,6 +37,7 @@ export const getDiskInfo = async () => {
     return parsedDiskInfo;
   } catch (error) {
     console.error(`Error in getDiskInfo: ${error.message}`);
+    return null;
   }
 };
 
@@ -89,7 +88,7 @@ export const renderDiskGraph = (diskInfo) => {
   for (let i = 10; i >= 1; i--) {
     const label = i % 2 === 0 ? String(i * 10).padStart(3) : "   ";
     let row = `  ${muted}${label} ┤${reset}`;
-    for (let j = 0; j < MAX_HISTORY; j++) {
+    for (let j = 0; j < history.length; j++) {
       if (getData(history[j]) < i * 10) {
         row += dimGrey + "░" + reset;
       } else {

@@ -64,7 +64,9 @@ export const renderGraph = (totalRamConsumed) => {
   const currentColor = renderColor(current);
   const lines = [];
 
-  lines.push(`  ${bold}${white}RAM USAGE${reset}  ${muted}macOS · ${history.length} samples · 24 GB total${reset}`);
+  lines.push(
+    `  ${bold}${white}RAM USAGE${reset}  ${muted}macOS · ${history.length} samples · 24 GB total${reset}`,
+  );
   lines.push("");
 
   for (let i = 7; i >= 0; i--) {
@@ -86,7 +88,9 @@ export const renderGraph = (totalRamConsumed) => {
   const pct = Math.round((current / 24) * 100);
   const filled = Math.round((current / 24) * 16);
   const bar = `${currentColor}${"█".repeat(filled)}${reset}${muted}${"░".repeat(16 - filled)}${reset}`;
-  lines.push(`  ${muted}●${reset}  ${currentColor}${bold}${current} GB${reset}  ${muted}/ 24 GB${reset}  ${bar}  ${currentColor}${bold}${pct}%${reset}`);
+  lines.push(
+    `  ${muted}●${reset}  ${currentColor}${bold}${current} GB${reset}  ${muted}/ 24 GB${reset}  ${bar}  ${currentColor}${bold}${pct}%${reset}`,
+  );
 
   return lines;
 };

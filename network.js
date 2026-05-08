@@ -39,16 +39,13 @@ const getNetworkData = async () => {
 const MAX_HEIGHT = 4;
 const MAX_HISTORY = 50;
 
-const downHistory = [];
-const upHistory = [];
-
 const getColor = (value) => {
   if (value < 3) return green;
   if (value <= 8) return yellow;
   return red;
 };
 
-const renderNetworkGraph = (data, label, historyArr) => {
+export const renderNetworkGraph = (data, label, historyArr) => {
   if (historyArr.length > MAX_HISTORY) historyArr.shift();
   historyArr.push(data);
 
@@ -89,7 +86,7 @@ const renderNetworkGraph = (data, label, historyArr) => {
 const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*m/g, "");
 const visLen = (s) => stripAnsi(s).length;
 
-const renderSideBySide = (leftLines, rightLines, gap = 4) => {
+export const renderSideBySide = (leftLines, rightLines, gap = 4) => {
   const leftWidth = Math.max(...leftLines.map((l) => visLen(l)));
   const height = Math.max(leftLines.length, rightLines.length);
   let out = "";
@@ -103,7 +100,7 @@ const renderSideBySide = (leftLines, rightLines, gap = 4) => {
 };
 
 let prevSnapshot = null;
-const getData = async () => {
+export const getData = async () => {
   const current = await getNetworkData();
 
   if (!prevSnapshot) {
@@ -122,22 +119,25 @@ const getData = async () => {
   };
 };
 
-setInterval(async () => {
-  const { parsedInputBytes, parsedOutputBytes } = await getData();
-  process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
+const downHistory = [];
+const upHistory = [];
 
-  const hLine = "─".repeat(14);
-  process.stdout.write(`\n  ${purple}╭${hLine}╮${reset}\n`);
-  process.stdout.write(
-    `  ${purple}│${reset}  ${cyan}◈${reset}  ${bold}network${reset}  ${purple}│${reset}\n`,
-  );
-  process.stdout.write(`  ${purple}╰${hLine}╯${reset}\n\n`);
+// setInterval(async () => {
+//   const { parsedInputBytes, parsedOutputBytes } = await getData();
+//   process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
 
-  const downLines = renderNetworkGraph(
-    parsedInputBytes,
-    "DOWNLOAD ↓",
-    downHistory,
-  );
-  const upLines = renderNetworkGraph(parsedOutputBytes, "UPLOAD ↑", upHistory);
-  renderSideBySide(downLines, upLines);
-}, 1000);
+//   // const hLine = "─".repeat(14);
+//   // process.stdout.write(`\n  ${purple}╭${hLine}╮${reset}\n`);
+//   // process.stdout.write(
+//   //   `  ${purple}│${reset}  ${cyan}◈${reset}  ${bold}network${reset}  ${purple}│${reset}\n`,
+//   // );
+//   // process.stdout.write(`  ${purple}╰${hLine}╯${reset}\n\n`);
+
+//   const downLines = renderNetworkGraph(
+//     parsedInputBytes,
+//     "DOWNLOAD ↓",
+//     downHistory,
+//   );
+//   const upLines = renderNetworkGraph(parsedOutputBytes, "UPLOAD ↑", upHistory);
+//   renderSideBySide(downLines, upLines);
+// }, 1000);
