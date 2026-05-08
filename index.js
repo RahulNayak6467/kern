@@ -5,6 +5,13 @@ const require = createRequire(import.meta.url);
 import { getVMStat, renderGraph } from "./ram.js";
 import { getDiskInfo, renderDiskGraph } from "./disk.js";
 import { getData, renderNetworkGraph } from "./network.js";
+import { getBatteryData, renderBatteryGraph } from "./battery.js";
+import {
+  getCPUData,
+  renderCPUGraph,
+  formatPercoreData,
+  renderPerCoreGrid,
+} from "./cpu.js";
 
 const user = os.userInfo();
 const host = os.hostname();
@@ -150,9 +157,27 @@ const downHistory = [];
 const upHistory = [];
 
 setInterval(async () => {
-  const totalRamConsumed = await getVMStat();
-  const diskInfo = await getDiskInfo();
-  const { parsedInputBytes, parsedOutputBytes } = await getData();
+  // const totalRamConsumed = await getVMStat();
+  // const diskInfo = await getDiskInfo();
+  // const { parsedInputBytes, parsedOutputBytes } = await getData();
+  // const data = await getBatteryData();
+  // const cpuData = await getCPUData();
+  // //   const { p0, p1, s } = await formatPercoreData();
+  const [
+    totalRamConsumed,
+    diskInfo,
+    { parsedInputBytes, parsedOutputBytes },
+    data,
+    cpuData,
+    { p0, p1, s },
+  ] = await Promise.all([
+    getVMStat(),
+    getDiskInfo(),
+    getData(),
+    getBatteryData(),
+    getCPUData(),
+    formatPercoreData(),
+  ]);
 
   process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
   // process.stdout.write(
@@ -173,4 +198,17 @@ setInterval(async () => {
 
   const upLines = renderNetworkGraph(parsedOutputBytes, "UPLOAD ↑", upHistory);
   renderSideBySide(downLines, upLines);
+  process.stdout.write("\n");
+
+  const cpuLines = await renderCPUGraph(cpuData);
+  const batteryLines = await renderBatteryGraph(data);
+  renderSideBySide(cpuLines, batteryLines);
+  process.stdout.write("\n");
+  renderPerCoreGrid({ p0, p1, s });
 }, 1000);
+
+// setInterval(async () => {
+//   const data = await getBatteryData();
+//   // process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
+//   renderBatteryGraph(data);
+// }, 30000);

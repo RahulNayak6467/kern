@@ -121,23 +121,3 @@ export const getData = async () => {
 
 const downHistory = [];
 const upHistory = [];
-
-// setInterval(async () => {
-//   const { parsedInputBytes, parsedOutputBytes } = await getData();
-//   process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
-
-//   // const hLine = "─".repeat(14);
-//   // process.stdout.write(`\n  ${purple}╭${hLine}╮${reset}\n`);
-//   // process.stdout.write(
-//   //   `  ${purple}│${reset}  ${cyan}◈${reset}  ${bold}network${reset}  ${purple}│${reset}\n`,
-//   // );
-//   // process.stdout.write(`  ${purple}╰${hLine}╯${reset}\n\n`);
-
-//   const downLines = renderNetworkGraph(
-//     parsedInputBytes,
-//     "DOWNLOAD ↓",
-//     downHistory,
-//   );
-//   const upLines = renderNetworkGraph(parsedOutputBytes, "UPLOAD ↑", upHistory);
-//   renderSideBySide(downLines, upLines);
-// }, 1000);

@@ -59,15 +59,15 @@ export const renderBatteryGraph = async (data) => {
     `${barColor}${"█".repeat(miniFilled)}${reset}` +
     `${dimGrey}${"░".repeat(16 - miniFilled)}${reset}`;
 
-  process.stdout.write(
-    `  ${bold}${white}BATTERY${reset}  ${muted}macOS · pmset · ${charging}${reset}\n`,
+  const lines = [];
+  lines.push(`  ${bold}${white}BATTERY${reset}  ${muted}macOS · pmset · ${charging}${reset}`);
+  lines.push("");
+  lines.push(`  ${bigBar}  ${barColor}${bold}${value}%${reset}`);
+  lines.push("");
+  lines.push(
+    `  ${muted}●${reset}  ${barColor}${bold}${value}%${reset}  ${muted}/ 100%${reset}  ${miniBar}  ${muted}${stateIcon} ${charging} · ${remaining}${reset}`,
   );
-  process.stdout.write("\n");
-  process.stdout.write(`  ${bigBar}  ${barColor}${bold}${value}%${reset}\n`);
-  process.stdout.write("\n");
-  process.stdout.write(
-    `  ${muted}●${reset}  ${barColor}${bold}${value}%${reset}  ${muted}/ 100%${reset}  ${miniBar}  ${muted}${stateIcon} ${charging} · ${remaining}${reset}\n`,
-  );
+  return lines;
 };
 
 // setInterval(async () => {
