@@ -1,6 +1,8 @@
 import os from "os";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
+import { getVMStat, renderGraph } from "./ram.js";
+import { getDiskInfo, renderDiskGraph } from "./disk.js";
 
 const user = os.userInfo();
 const host = os.hostname();
@@ -99,7 +101,7 @@ const renderRow = (rowIdx) => {
   return line + `${pu}│${re}`;
 };
 
-(async () => {
+const showSystemInfo = async () => {
   //   const vmData = await getVMStat();
 
   // header
@@ -127,4 +129,33 @@ const renderRow = (rowIdx) => {
   }
   console.log(hRule("╰", "┴", "╯"));
   console.log();
-})();
+};
+
+const renderSideBySide = (leftLines, rightLines, gap = 4) => {
+  const leftWidth = Math.max(...leftLines.map((l) => visLen(l)));
+  const height = Math.max(leftLines.length, rightLines.length);
+  let out = "";
+  for (let i = 0; i < height; i++) {
+    const l = leftLines[i] ?? "";
+    const r = rightLines[i] ?? "";
+    const pad = leftWidth - visLen(l);
+    out += l + " ".repeat(pad + gap) + r + "\n";
+  }
+  process.stdout.write(out);
+};
+
+setInterval(async () => {
+  const totalRamConsumed = await getVMStat();
+  const diskInfo = await getDiskInfo();
+
+  process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
+  // process.stdout.write(
+  //   `Ram usage: ${history[history.length - 1]} GB / 24 GB\n`,
+  // );
+
+  showSystemInfo();
+  process.stdout.write("\n");
+  const ramLines = renderGraph(totalRamConsumed);
+  const diskLines = renderDiskGraph(diskInfo);
+  renderSideBySide(ramLines, diskLines);
+}, 1000);

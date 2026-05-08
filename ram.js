@@ -4,7 +4,7 @@ const execPromise = promisify(exec);
 
 const PAGE_SIZE = 16384;
 
-const getVMStat = async () => {
+export const getVMStat = async () => {
   try {
     const { stderr, stdout } = await execPromise("vm_stat");
     if (stderr) {
@@ -54,47 +54,48 @@ const renderColor = (value) => {
   }
 };
 
-const renderGraph = (totalRamConsumed) => {
+export const renderGraph = (totalRamConsumed) => {
   history.push(totalRamConsumed);
-  if (history.length > 100) {
+  if (history.length > 50) {
     history.shift();
   }
 
   const current = history[history.length - 1];
   const currentColor = renderColor(current);
+  const lines = [];
 
-  process.stdout.write(
-    `\n  ${bold}${white}RAM USAGE${reset}  ${muted}macOS · ${history.length} samples · 24 GB total${reset}\n\n`,
-  );
+  lines.push(`  ${bold}${white}RAM USAGE${reset}  ${muted}macOS · ${history.length} samples · 24 GB total${reset}`);
+  lines.push("");
 
   for (let i = 7; i >= 0; i--) {
     const label = String((i + 1) * 3).padStart(2);
-    process.stdout.write(`  ${muted}${label} ┤${reset}`);
+    let row = `  ${muted}${label} ┤${reset}`;
     for (let j = 0; j < history.length; j++) {
       if ((history[j] * 8) / 24 < i) {
-        process.stdout.write(`${dimGrey}░${reset}`);
+        row += `${dimGrey}░${reset}`;
       } else {
-        process.stdout.write(renderColor(history[j]) + "█" + reset);
+        row += renderColor(history[j]) + "█" + reset;
       }
     }
-    process.stdout.write("\n");
+    lines.push(row);
   }
 
-  process.stdout.write(`  ${muted} 0 └${"─".repeat(history.length)}${reset}\n`);
+  lines.push(`  ${muted} 0 └${"─".repeat(history.length)}${reset}`);
+  lines.push("");
 
   const pct = Math.round((current / 24) * 100);
   const filled = Math.round((current / 24) * 16);
   const bar = `${currentColor}${"█".repeat(filled)}${reset}${muted}${"░".repeat(16 - filled)}${reset}`;
-  process.stdout.write(
-    `\n  ${muted}●${reset}  ${currentColor}${bold}${current} GB${reset}  ${muted}/ 24 GB${reset}  ${bar}  ${currentColor}${bold}${pct}%${reset}\n`,
-  );
+  lines.push(`  ${muted}●${reset}  ${currentColor}${bold}${current} GB${reset}  ${muted}/ 24 GB${reset}  ${bar}  ${currentColor}${bold}${pct}%${reset}`);
+
+  return lines;
 };
 
-setInterval(async () => {
-  const totalRamConsumed = await getVMStat();
-  process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
-  // process.stdout.write(
-  //   `Ram usage: ${history[history.length - 1]} GB / 24 GB\n`,
-  // );
-  renderGraph(totalRamConsumed);
-}, 1000);
+// setInterval(async () => {
+//   const totalRamConsumed = await getVMStat();
+//   process.stdout.write("\x1b[2J\x1b[3J\x1b[H");
+//   // process.stdout.write(
+//   //   `Ram usage: ${history[history.length - 1]} GB / 24 GB\n`,
+//   // );
+//   renderGraph(totalRamConsumed);
+// }, 1000);
