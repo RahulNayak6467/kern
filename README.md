@@ -2,7 +2,7 @@
 
 A real-time macOS terminal system monitor built in pure Node.js with zero external dependencies.
 
-https://github.com/user-attachments/assets/your-video-id
+https://github.com/user-attachments/assets/445f21bf-514f-421c-955e-2213f50c1219
 
 
 ---
