@@ -215,7 +215,7 @@ export const renderPerCoreGrid = (clusterData) => {
   const clusters = [
     { name: "EFFICIENCY", short: "P0", data: clusterData?.p0, base: 0 },
     { name: "PERFORMANCE", short: "P1", data: clusterData?.p1, base: 5 },
-    { name: "SYSTEM", short: "S", data: clusterData?.s, base: 10 },
+    { name: "SUPER", short: "S", data: clusterData?.s, base: 10 },
   ];
 
   // panel header box
